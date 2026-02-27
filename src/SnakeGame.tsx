@@ -6,7 +6,7 @@ type Direction = 'UP' | 'DOWN' | 'LEFT' | 'RIGHT'
 
 const GRID_SIZE = 20
 const CELL_SIZE = 20
-const INITIAL_SPEED = 100
+const INITIAL_SPEED = 200
 
 export function SnakeGame() {
   const [snake, setSnake] = useState<Position[]>([{ x: 10, y: 10 }])
@@ -64,6 +64,10 @@ export function SnakeGame() {
   useEffect(() => {
     if (gameOver) return
 
+    // Calculate game speed based on score
+    // Speed increases when score > 50
+    const gameSpeed = score > 50 ? Math.max(80, INITIAL_SPEED - Math.floor((score - 50) / 10) * 10) : INITIAL_SPEED
+
     gameLoopRef.current = setInterval(() => {
       setSnake((prevSnake) => {
         setDirection(nextDirection)
@@ -110,12 +114,12 @@ export function SnakeGame() {
 
         return newSnake
       })
-    }, INITIAL_SPEED)
+    }, gameSpeed)
 
     return () => {
       if (gameLoopRef.current) clearInterval(gameLoopRef.current)
     }
-  }, [gameOver, nextDirection, food])
+  }, [gameOver, nextDirection, food, score])
 
   const resetGame = () => {
     setSnake([{ x: 10, y: 10 }])
